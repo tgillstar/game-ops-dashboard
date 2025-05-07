@@ -9,7 +9,6 @@ Below is the high-level system diagram. To view it, either:
 
 - Open `diagrams/architecture.mmd` in VS Code with the “Mermaid Preview” extension  
 - Paste the contents into [Mermaid Live Editor](https://mermaid.live)
-- View the diagram here: https://www.mermaidchart.com/app/projects/9928bb22-627a-4e29-b69e-1656e4bd703e/diagrams/749cd908-ca8c-42c3-b5b9-9c23a42601b1/version/v0.1/edit 
 
 ```mermaid
 flowchart LR
