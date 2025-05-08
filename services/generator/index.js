@@ -69,6 +69,19 @@ async function publishEvent() {
 // Kick off the loop and keep a reference for shutdown
 const timer = setInterval(publishEvent, INTERVAL_MS);
 
+
+// Graceful shutdown on SIGINT (Ctrl+C) and SIGTERM (container stop)
+process.on('SIGINT', () => {
+  console.log('\n Caught SIGINT. Shutting down generator…');
+  clearInterval(timer);
+  process.exit(0);
+});
+process.on('SIGTERM', () => {
+  console.log('\n Caught SIGTERM. Shutting down generator…');
+  clearInterval(timer);
+  process.exit(0);
+});
+
 // Export for testing
 module.exports = {
   pickEventType,
