@@ -1,14 +1,14 @@
 {
-  "name": "generator",
+  "name": "game-ops-generator",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "ZTiffany Gill",
+  "license": "MIT",
+  "description": "Simulates game events and publishes to Pub/Sub",
   "dependencies": {
     "@google-cloud/pubsub": "^5.0.0",
     "dotenv": "^16.5.0",

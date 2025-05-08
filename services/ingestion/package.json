@@ -1,0 +1,12 @@
+{
+  "name": "game-ops-ingestion",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "TIffany Gill",
+  "license": "MIT",
+  "description": "Subscribes to Pub/Sub and writes events to Postgres"
+}
