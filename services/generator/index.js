@@ -66,8 +66,8 @@ async function publishEvent() {
   }
 }
 
-// Kick off the loop
-setInterval(publishEvent, INTERVAL_MS);
+// Kick off the loop and keep a reference for shutdown
+const timer = setInterval(publishEvent, INTERVAL_MS);
 
 // Export for testing
 module.exports = {
