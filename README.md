@@ -1,6 +1,7 @@
 # Game Ops Dashboard
 
 **GCP-native internal admin dashboard for live game operations**
+
 Simulates millions of game events/day via Pub/Sub → Cloud Run → Cloud SQL & MemoryStore → Next.js UI.
 
 ---
