@@ -1,6 +1,10 @@
-require('dotenv').config({
-  path: require('path').resolve(__dirname, '../../.env')
-});
+// Load a local `.env` only if it exists (for dev). Otherwise rely on process.env.
+const path = require('path');
+const fs = require('fs');
+const envPath = path.resolve(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+}
 
 const { PubSub } = require('@google-cloud/pubsub');
 const { v4: uuid } = require('uuid');
