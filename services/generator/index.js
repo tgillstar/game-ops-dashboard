@@ -48,6 +48,25 @@ function buildMetadata(type) {
   }
 }
 
+// Kick off the loop and keep a reference for shutdown
+let timer = setInterval(publishEvent, INTERVAL_MS);
+
+// Back-off settings
+let backoffMs = INTERVAL_MS;
+const MAX_BACKOFF_MS = 10000; // Cap at 10s
+
+// Graceful shutdown on SIGINT (Ctrl+C) and SIGTERM (container stop)
+process.on('SIGINT', () => {
+  console.log('\n Caught SIGINT. Shutting down generator…');
+  clearInterval(timer);
+  process.exit(0);
+});
+process.on('SIGTERM', () => {
+  console.log('\n Caught SIGTERM. Shutting down generator…');
+  clearInterval(timer);
+  process.exit(0);
+});
+
 async function publishEvent() {
   const type = pickEventType();
   const event = {
@@ -61,26 +80,34 @@ async function publishEvent() {
   try {
     const messageId = await pubsub.topic(TOPIC).publish(dataBuffer);
     console.log(`Published ${type} (${messageId})`);
+
+    // If we were in back-off, restore normal interval
+    if (backoffMs !== INTERVAL_MS) {
+      clearInterval(timer);
+      backoffMs = INTERVAL_MS;
+      timer = setInterval(publishEvent, INTERVAL_MS);
+      console.log('Recovered—resuming normal publish rate');
+    }
   } catch (err) {
-    console.error('Publish error:', err);
+    console.error(`Publish error, backing off for ${backoffMs}ms`, err);
+
+    // Stop the regular interval
+    clearInterval(timer);
+
+    // If we’re already at max backoff, give up entirely
+    if (backoffMs >= MAX_BACKOFF_MS) {
+      console.error(`Reached max back-off of ${MAX_BACKOFF_MS}ms. Exiting generator.`);
+      process.exit(1);
+    }
+
+    // Otherwise wait backoffMs, then restart the loop and increase backoff
+    setTimeout(() => {
+      timer = setInterval(publishEvent, INTERVAL_MS);
+      backoffMs = Math.min(backoffMs * 2, MAX_BACKOFF_MS);
+      console.log(`Retrying publishes; next back-off up to ${backoffMs}ms if errors continue`);
+    }, backoffMs);
   }
 }
-
-// Kick off the loop and keep a reference for shutdown
-const timer = setInterval(publishEvent, INTERVAL_MS);
-
-
-// Graceful shutdown on SIGINT (Ctrl+C) and SIGTERM (container stop)
-process.on('SIGINT', () => {
-  console.log('\n Caught SIGINT. Shutting down generator…');
-  clearInterval(timer);
-  process.exit(0);
-});
-process.on('SIGTERM', () => {
-  console.log('\n Caught SIGTERM. Shutting down generator…');
-  clearInterval(timer);
-  process.exit(0);
-});
 
 // Export for testing
 module.exports = {
