@@ -22,3 +22,37 @@ const pubsub       = new PubSub({ projectId });
 const subscription = pubsub.subscription(subscriptionId);
 const pool         = new Pool(dbConfig);
 
+subscription.on('message', async message => {
+  console.log(`Received message ${message.id}`);
+  
+  // Parse the JSON payload
+  let event;
+  try {
+    event = JSON.parse(message.data.toString());
+  } catch (err) {
+    console.error('Failed to parse message data as JSON:', err);
+    // Acknowledge so it isn’t retried endlessly
+    return message.ack();
+  }
+
+  // Destructure for clarity
+  const { id, type, timestamp, metadata } = event;
+
+  // Insert into Postgres
+  try {
+    await pool.query(
+      `INSERT INTO game_events(id, type, timestamp, metadata)
+       VALUES($1, $2, $3, $4)`,
+      [id, type, timestamp, JSON.stringify(metadata)]
+    );
+    console.log(`💾 Stored event ${id}`);
+    message.ack();
+  } catch (err) {
+    console.error('DB insert error:', err);
+  }
+});
+
+// Handle subscription errors
+subscription.on('error', err => {
+  console.error('Subscription error:', err);
+});
