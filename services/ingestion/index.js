@@ -45,7 +45,7 @@ subscription.on('message', async message => {
        VALUES($1, $2, $3, $4)`,
       [id, type, timestamp, JSON.stringify(metadata)]
     );
-    console.log(`💾 Stored event ${id}`);
+    console.log(`Stored event ${id}`);
     message.ack();
   } catch (err) {
     console.error('DB insert error:', err);

@@ -8,5 +8,10 @@
   "keywords": [],
   "author": "TIffany Gill",
   "license": "MIT",
-  "description": "Subscribes to Pub/Sub and writes events to Postgres"
+  "description": "Subscribes to Pub/Sub and writes events to Postgres",
+  "dependencies": {
+    "@google-cloud/pubsub": "^5.0.0",
+    "dotenv": "^16.5.0",
+    "pg": "^8.15.6"
+  }
 }
